@@ -30,10 +30,12 @@ class DWatchGUI:
     print "topRightReleased"
   
   def topLeftPressed(self):
-    self.eventhandler.event("changeMode")
-  
+    print "topLeftPressed"
+
   def topLeftReleased(self):
     print "topLeftReleased"
+    self.eventhandler.event("changeMode")
+
     
   def bottomRightPressed(self):
     self.eventhandler.event("initChrono")
