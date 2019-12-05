@@ -79,7 +79,7 @@ class DWatchGUI:
   def bottomLeftPressed(self):
     self.eventhandler.event("resetChrono")
     self.eventhandler.event("increase")
-    # self.eventhandler.event("setAlarm")
+    self.eventhandler.event("setAlarm")
 
   def bottomLeftReleased(self):
     self.eventhandler.event("stopInc")
