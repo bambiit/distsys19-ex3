@@ -113,7 +113,7 @@ class LowLevelGUI:
     Y = self.displayCanvas.canvasy(event.y)
     
     objTag = self.displayCanvas.find_closest(X,Y,halo=5)
-        
+
     if self.topRightButton in objTag:
       self.controller.topRightPressed()
       self.lastPressed = "topRight"
@@ -174,6 +174,20 @@ class LowLevelGUI:
     year  = self.__intToString(self.curDate[2])
     
     return month+"/"+day+"/"+year
+
+  def increaseTimeBySecond(self):
+    self.increaseSecondsByOne()
+
+    if self.timeTag != None:
+      if self.curTime[2] == 0:
+        self.increaseMinutesByOne()
+        if self.curTime[1] == 0:
+          self.increaseHoursByOne()
+    else:
+      if self.curAlarm[2] == 0:
+        self.increaseMinutesByOne()
+        if self.curAlarm[1] == 0:
+          self.increaseHoursByOne()
     
   def increaseHoursByOne(self):
     if self.timeTag != None:
@@ -379,8 +393,7 @@ class LowLevelGUI:
     if "seconds" not in toDraw:
       timeToDraw=timeToDraw[0:6]+"  "
       
-    self.clearDisplay()     
-      
+    self.clearDisplay()
     self.timeTag =self.displayCanvas.create_text((RECT_X0+RECT_X1)/2,
                                                  (RECT_Y0+RECT_Y1)/2+5,
                                                   font = FONT_TIME,
