@@ -10,6 +10,8 @@ class DWatchGUI:
 
     self.eventhandler = eventhandler
     self.start_holding_button = 0
+    self.backgroundChronoMode = False
+    self.display_time_mode = True
 
     self.handleEventOn()
   
@@ -39,18 +41,17 @@ class DWatchGUI:
   def topLeftReleased(self):
     print "topLeftReleased"
     self.eventhandler.event("changeMode")
-
     
   def bottomRightPressed(self):
     self.start_holding_button = datetime.datetime.now()
     self.eventhandler.event("bottomRightPressed")
-    self.eventhandler.event("initChrono")
+
+    if self.display_time_mode is False:
+      self.eventhandler.event("initChrono")
 
   def chronoRunning(self):
       for i in range(25):
         self.increaseChronoByOne()
-
-  backgroundChronoMode = False
 
   def backgroundChrono(self):
     if(self.backgroundChronoMode == True):
@@ -162,8 +163,21 @@ class DWatchGUI:
   # Update running time for every second
   def updateRunningTime(self):
     self.GUI.increaseTimeBySecond()
-    self.refreshTimeDisplay()
+    if self.display_time_mode:
+      self.refreshTimeDisplay()
+
+    while self.display_time_mode == False:
+      print "cheating"
+      time.sleep(1)
+      self.updateRunningTime()
 
   # Stop waiting for edit, expired for 5 seconds
   def waitingEditExpired(self):
     self.eventhandler.event("finishEdit")
+
+  # Turn on/off Time Display Mode
+  def turnOffTimeDisplayMode(self):
+    self.display_time_mode = False
+
+  def turnOnTimeDisplayMode(self):
+    self.display_time_mode = True

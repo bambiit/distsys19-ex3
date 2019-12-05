@@ -10,95 +10,138 @@ INITIALIZER:
     root.mainloop()
 
 STATECHART:
-    START_WATCH [DS]
-        NORMAL_STATE [DS]
-        BOTTOM_RIGHT_BUTTON
-            HOLDING [CS]
-        EDIT_TIME
-            EDIT_MODE [DS]
-            INCREASING_TIME
-    RUNNING_TIME [DS][CS]
+    NORMAL_STATE [DS]
+        RUNNING_TIME [DS][CS]
+    BOTTOM_RIGHT_BUTTON_HOLDING [CS]
+    EDIT_TIME
+        EDIT_MODE [DS]
+        INCREASING_TIME
+    CHRONO [HS]
+        STOP [DS]
+        RUNNING
 
 TRANSITION:
-    S: RUNNING_TIME
-    N: RUNNING_TIME
+    S: NORMAL_STATE.RUNNING_TIME
+    N: NORMAL_STATE.RUNNING_TIME
     T: 1
     O: g.updateRunningTime()
 
 TRANSITION: [-1]
-    S: START_WATCH.NORMAL_STATE
-    N: START_WATCH.BOTTOM_RIGHT_BUTTON.HOLDING
+    S: NORMAL_STATE
+    N: BOTTOM_RIGHT_BUTTON_HOLDING
     E: bottomRightPressed
 
 TRANSITION: [0]
-    S: START_WATCH.EDIT_TIME.EDIT_MODE
-    N: START_WATCH.BOTTOM_RIGHT_BUTTON.HOLDING
+    S: EDIT_TIME.EDIT_MODE
+    N: BOTTOM_RIGHT_BUTTON_HOLDING
     E: bottomRightPressed
     O: [DUMP("Press to stop editing")]
 
 TRANSITION: [0]
-    S: START_WATCH.BOTTOM_RIGHT_BUTTON.HOLDING
-    N: START_WATCH.EDIT_TIME
+    S: BOTTOM_RIGHT_BUTTON_HOLDING
+    N: EDIT_TIME
     E: editTime
     O: [DUMP("Enter edit time mode")]
 
 TRANSITION: [-1]
-    S: RUNNING_TIME
-    N: START_WATCH.EDIT_TIME
+    S: NORMAL_STATE.RUNNING_TIME
+    N: EDIT_TIME
     E: editTime
     O: [DUMP("Stop running time to edit")]
 
 TRANSITION: [0]
-    S: START_WATCH.BOTTOM_RIGHT_BUTTON.HOLDING
-    N: START_WATCH.NORMAL_STATE
+    S: BOTTOM_RIGHT_BUTTON_HOLDING
+    N: NORMAL_STATE
     E: finishEdit
     O: [DUMP("Stop editing time")]
 
 TRANSITION: [-1]
-    S: START_WATCH.BOTTOM_RIGHT_BUTTON.HOLDING
-    N: RUNNING_TIME
-    E: finishEdit
-    O: [DUMP("Restart running time")]
-
-TRANSITION: [-2]
-    S: START_WATCH.EDIT_TIME.EDIT_MODE
-    N: START_WATCH.NORMAL_STATE
+    S: EDIT_TIME.EDIT_MODE
+    N: NORMAL_STATE
     E: finishEdit
     O: [DUMP("Stop editing time")]
 
-TRANSITION: [-3]
-    S: START_WATCH.EDIT_TIME.EDIT_MODE
-    N: RUNNING_TIME
-    E: finishEdit
-    O: [DUMP("Restart running time")]
-
 TRANSITION:
-    S: START_WATCH.EDIT_TIME.EDIT_MODE
-    N: START_WATCH.EDIT_TIME.INCREASING_TIME
+    S: EDIT_TIME.EDIT_MODE
+    N: EDIT_TIME.INCREASING_TIME
     E: increase
     O: [DUMP("Start adjusting Time")]
        g.updateRunningTime()
 
 TRANSITION:
-    S: START_WATCH.EDIT_TIME.INCREASING_TIME
-    N: START_WATCH.EDIT_TIME.INCREASING_TIME
+    S: EDIT_TIME.INCREASING_TIME
+    N: EDIT_TIME.INCREASING_TIME
     T: 0.3
     O: [DUMP("Adjusting Time")]
        g.updateRunningTime()
 
 TRANSITION:
-    S: START_WATCH.EDIT_TIME.INCREASING_TIME
-    N: START_WATCH.EDIT_TIME.EDIT_MODE
+    S: EDIT_TIME.INCREASING_TIME
+    N: EDIT_TIME.EDIT_MODE
     E: stopInc
     O: [DUMP("Stop adjusting Time")]
 
 TRANSITION:
-    S: START_WATCH.EDIT_TIME.EDIT_MODE
-    N: START_WATCH.EDIT_TIME.EDIT_MODE
+    S: EDIT_TIME.EDIT_MODE
+    N: EDIT_TIME.EDIT_MODE
     T: 5
     O: [DUMP("Stop waiting for editing action")]
        g.waitingEditExpired()
 
+TRANSITION: [HS]
+    S: NORMAL_STATE
+    N: CHRONO.STOP
+    E: changeMode
+    O: print "DISPLAY -> CHRONO"
+       g.updateRunningTime()
+       g.turnOffTimeDisplayMode()
+       g.refreshChronoDisplay()
+
+TRANSITION:
+    S: CHRONO.STOP
+    N: NORMAL_STATE
+    E: changeMode
+    O: print "CHRONO -> DISPLAY"
+       g.turnOnTimeDisplayMode()
+       g.refreshTimeDisplay()
+       g.backgroundChronoModeOn()
+
+TRANSITION:
+    S: CHRONO.RUNNING
+    N: NORMAL_STATE
+    E: changeMode
+    O: print "CHRONO -> DISPLAY, CHRONO BACKGROUND"
+       g.turnOnTimeDisplayMode()
+       g.refreshTimeDisplay()
+       g.backgroundChronoModeOn()
+       g.backgroundChrono()
+
+TRANSITION:
+    S: CHRONO.STOP
+    N: CHRONO.RUNNING
+    E: initChrono
+    O: print "CHRONO STARTED"
+
+TRANSITION:
+    S: CHRONO.RUNNING
+    N: CHRONO.RUNNING
+    T: 0.25
+    O: g.chronoRunning()
+       g.refreshChronoDisplay()
+
+TRANSITION:
+    S: CHRONO.RUNNING
+    N: CHRONO.STOP
+    E: initChrono
+    O: print "CHRONO STOPPED"
+
+TRANSITION:
+    S: CHRONO.STOP
+    N: CHRONO.STOP
+    E: resetChrono
+    O: g.resetChrono()
+       print "CHRONO RESET"
+       g.refreshChronoDisplay()
 
 
 

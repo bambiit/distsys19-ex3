@@ -176,18 +176,11 @@ class LowLevelGUI:
     return month+"/"+day+"/"+year
 
   def increaseTimeBySecond(self):
-    self.increaseSecondsByOne()
-
-    if self.timeTag != None:
-      if self.curTime[2] == 0:
-        self.increaseMinutesByOne()
-        if self.curTime[1] == 0:
-          self.increaseHoursByOne()
-    else:
-      if self.curAlarm[2] == 0:
-        self.increaseMinutesByOne()
-        if self.curAlarm[1] == 0:
-          self.increaseHoursByOne()
+    self.curTime[2]=(self.curTime[2]+1)%60
+    if self.curTime[2] == 0:
+      self.curTime[1]=(self.curTime[1]+1)%60
+      if self.curTime[1] == 0:
+        self.curTime[0]=(self.curTime[0]+1)%24
     
   def increaseHoursByOne(self):
     if self.timeTag != None:
