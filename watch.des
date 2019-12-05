@@ -1,0 +1,32 @@
+INITIALIZER:
+    from Tkinter import *
+    from DWatchGUI import DWatchGUI
+    
+    root = Tk()
+    root.title("WATCH-task3")
+    g = DWatchGUI(root, eventhandler)
+    
+    eventhandler.start()
+    
+    root.mainloop()
+
+STATECHART:
+    DISPLAY [DS]
+    B
+    CHRONO
+
+TRANSITION:
+    S: DISPLAY
+    N: CHRONO
+    E: changeMode
+    O: print "DISPLAY -> CHRONO"
+       g.refreshChronoDisplay()
+
+
+TRANSITION:
+    S: CHRONO
+    N: DISPLAY
+    E: changeMode
+    O: print "CHRONO -> DISPLAY "
+       g.refreshTimeDisplay()
+       g.increaseTimeByOne()

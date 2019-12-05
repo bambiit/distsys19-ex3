@@ -33,10 +33,12 @@ class DWatchGUI:
     print "topRightReleased"
   
   def topLeftPressed(self):
-    self.eventhandler.event("changeMode")
-  
+    print "topLeftPressed"
+
   def topLeftReleased(self):
     print "topLeftReleased"
+    self.eventhandler.event("changeMode")
+
     
   def bottomRightPressed(self):
     self.start_holding_button = datetime.datetime.now()
@@ -142,5 +144,6 @@ class DWatchGUI:
     self.GUI.increaseTimeBySecond()
     self.refreshTimeDisplay()
 
+  # Stop waiting for edit, expired for 5 seconds
   def waitingEditExpired(self):
     self.eventhandler.event("finishEdit")
