@@ -57,9 +57,9 @@ class DWatchGUI:
     self.start_holding_button = 0
 
   def bottomLeftPressed(self):
-    # self.eventhandler.event("resetChrono")
+    self.eventhandler.event("resetChrono")
     self.eventhandler.event("increase")
-    # self.eventhandler.event("setAlarm")
+    self.eventhandler.event("setAlarm")
 
   def bottomLeftReleased(self):
     self.eventhandler.event("stopInc")
