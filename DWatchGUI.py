@@ -1,14 +1,17 @@
 from Tkinter import *
 from LowLevelGUI import *
 import time
+import datetime
 
 class DWatchGUI:
+
   def __init__(self, parent, eventhandler):
     self.GUI = LowLevelGUI(parent, self)
 
     self.eventhandler = eventhandler
+    self.start_holding_button = 0
 
-    self.handleEventOn
+    self.handleEventOn()
   
   def handleEventOn(self):
     self.eventhandler.event("on")
@@ -36,17 +39,25 @@ class DWatchGUI:
     print "topLeftReleased"
     
   def bottomRightPressed(self):
+    self.start_holding_button = datetime.datetime.now()
+    self.eventhandler.event("bottomRightPressed")
     self.eventhandler.event("initChrono")
-    self.eventhandler.event("editTime")
-    self.eventhandler.event("finishEdit")
 
   def bottomRightReleased(self):
     self.eventhandler.event("released")
-  
+    diff = datetime.datetime.now() - self.start_holding_button
+    holding_duration = round(float(diff.total_seconds()), 1)
+
+    if holding_duration >= 2:
+      self.eventhandler.event("finishEdit")
+    elif holding_duration >= 1.5:
+      self.eventhandler.event("editTime")
+    self.start_holding_button = 0
+
   def bottomLeftPressed(self):
-    self.eventhandler.event("resetChrono")
+    # self.eventhandler.event("resetChrono")
     self.eventhandler.event("increase")
-    self.eventhandler.event("setAlarm")  
+    # self.eventhandler.event("setAlarm")
 
   def bottomLeftReleased(self):
     self.eventhandler.event("stopInc")
@@ -77,7 +88,7 @@ class DWatchGUI:
   def increaseTimeByOne(self):
     self.GUI.increaseTimeByOne()
     self.refreshTimeDisplay()    
- 
+
   def resetChrono(self):
     self.GUI.resetChrono()
     
@@ -125,3 +136,11 @@ class DWatchGUI:
     else:
       return False
 
+
+  # Update running time for every second
+  def updateRunningTime(self):
+    self.GUI.increaseTimeBySecond()
+    self.refreshTimeDisplay()
+
+  def waitingEditExpired(self):
+    self.eventhandler.event("finishEdit")
