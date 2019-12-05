@@ -12,7 +12,6 @@ INITIALIZER:
 
 STATECHART:
     DISPLAY [DS]
-    B
     CHRONO [HS]
         STOP [DS]
         RUNNING
@@ -25,35 +24,50 @@ TRANSITION: [HS]
     O: print "DISPLAY -> CHRONO"
        g.refreshChronoDisplay()
 
+TRANSITION:
+    S: CHRONO.STOP
+    N: DISPLAY
+    E: changeMode
+    O: print "CHRONO -> DISPLAY"
+       g.refreshTimeDisplay()
+       g.backgroundChronoModeOn()
 
 
 TRANSITION:
-    S: CHRONO
+    S: CHRONO.RUNNING
     N: DISPLAY
     E: changeMode
-    O: print "CHRONO -> DISPLAY "
+    O: print "CHRONO -> DISPLAY"
        g.refreshTimeDisplay()
-
-
-
+       g.backgroundChronoModeOn()
+       g.backgroundChrono()
 
 TRANSITION:
     S: CHRONO.STOP
     N: CHRONO.RUNNING
     E: initChrono
     O: print "CHRONO STARTED"
-       g.chronoRunning()
-
 
 TRANSITION:
     S: CHRONO.RUNNING
     N: CHRONO.RUNNING
     T: 0.25
     O: g.chronoRunning()
-
+       g.refreshChronoDisplay()
 
 TRANSITION:
     S: CHRONO.RUNNING
     N: CHRONO.STOP
     E: initChrono
     O: print "CHRONO STOPED"
+
+
+TRANSITION:
+    S: CHRONO.STOP
+    N: CHRONO.STOP
+    E: resetChrono
+    O: g.resetChrono()
+       print "CHRONO RESET"
+       g.refreshChronoDisplay()
+
+

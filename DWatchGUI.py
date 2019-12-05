@@ -34,6 +34,7 @@ class DWatchGUI:
   
   def topLeftPressed(self):
     print "topLeftPressed"
+    self.backgroundChronoModeOff()
 
   def topLeftReleased(self):
     print "topLeftReleased"
@@ -48,12 +49,20 @@ class DWatchGUI:
   def chronoRunning(self):
       for i in range(25):
         self.increaseChronoByOne()
-      self.refreshChronoDisplay()
 
-  def chronoBackground(self):
-      for i in range(25):
-        self.increaseChronoByOne()
-      
+  backgroundChronoMode = False
+
+  def backgroundChrono(self):
+    if(self.backgroundChronoMode == True):
+      time.sleep(0.25)
+      self.chronoRunning()
+      self.backgroundChrono()
+
+  def backgroundChronoModeOn(self):
+    self.backgroundChronoMode = True
+
+  def backgroundChronoModeOff(self):
+    self.backgroundChronoMode = False
 
 
   def bottomRightReleased(self):
@@ -68,7 +77,7 @@ class DWatchGUI:
     self.start_holding_button = 0
 
   def bottomLeftPressed(self):
-    # self.eventhandler.event("resetChrono")
+    self.eventhandler.event("resetChrono")
     self.eventhandler.event("increase")
     # self.eventhandler.event("setAlarm")
 
