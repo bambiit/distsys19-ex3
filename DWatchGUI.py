@@ -42,6 +42,17 @@ class DWatchGUI:
     self.eventhandler.event("editTime")
     self.eventhandler.event("finishEdit")
 
+  def chronoRunning(self):
+      for i in range(25):
+        self.increaseChronoByOne()
+      self.refreshChronoDisplay()
+
+  def chronoBackground(self):
+      for i in range(25):
+        self.increaseChronoByOne()
+      
+
+
   def bottomRightReleased(self):
     self.eventhandler.event("released")
   
