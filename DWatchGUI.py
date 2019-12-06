@@ -2,6 +2,7 @@ from Tkinter import *
 from LowLevelGUI import *
 import time
 import datetime
+import thread
 
 class DWatchGUI:
 
@@ -59,12 +60,15 @@ class DWatchGUI:
       self.chronoRunning()
       self.backgroundChrono()
 
+  def startThreadBackgroundChrono(self):
+    if self.backgroundChronoMode == True:
+      thread.start_new_thread(self.backgroundChrono, ())
+
   def backgroundChronoModeOn(self):
     self.backgroundChronoMode = True
 
   def backgroundChronoModeOff(self):
     self.backgroundChronoMode = False
-
 
   def bottomRightReleased(self):
     self.eventhandler.event("released")
@@ -162,14 +166,13 @@ class DWatchGUI:
 
   # Update running time for every second
   def updateRunningTime(self):
-    self.GUI.increaseTimeBySecond()
     if self.display_time_mode:
+      self.GUI.increaseTimeBySecond()
       self.refreshTimeDisplay()
 
     while self.display_time_mode == False:
-      print "cheating"
+      self.GUI.increaseTimeBySecond()
       time.sleep(1)
-      self.updateRunningTime()
 
   # Stop waiting for edit, expired for 5 seconds
   def waitingEditExpired(self):
@@ -178,6 +181,7 @@ class DWatchGUI:
   # Turn on/off Time Display Mode
   def turnOffTimeDisplayMode(self):
     self.display_time_mode = False
+    thread.start_new_thread(self.updateRunningTime, ())
 
   def turnOnTimeDisplayMode(self):
     self.display_time_mode = True

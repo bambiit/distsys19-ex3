@@ -93,7 +93,6 @@ TRANSITION: [HS]
     N: CHRONO.STOP
     E: changeMode
     O: print "DISPLAY -> CHRONO"
-       g.updateRunningTime()
        g.turnOffTimeDisplayMode()
        g.refreshChronoDisplay()
 
@@ -114,7 +113,7 @@ TRANSITION:
        g.turnOnTimeDisplayMode()
        g.refreshTimeDisplay()
        g.backgroundChronoModeOn()
-       g.backgroundChrono()
+       g.startThreadBackgroundChrono()
 
 TRANSITION:
     S: CHRONO.STOP
