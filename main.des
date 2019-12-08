@@ -8,9 +8,10 @@ INITIALIZER:
 
     eventhandler.start()
     root.mainloop()
+    exit()
 
 STATECHART:
-    NORMAL_STATE [DS]
+    NORMAL_STATE [DS][CS]
         RUNNING_TIME [DS][CS]
     BOTTOM_RIGHT_BUTTON_HOLDING [CS]
     EDIT_TIME
@@ -19,6 +20,22 @@ STATECHART:
     CHRONO [HS]
         STOP [DS]
         RUNNING
+    LIGHT[CS][DS]
+        OFF[CS][DS]
+        ON[CS]
+
+# LIGHT
+TRANSITION:
+    S: LIGHT.OFF
+    N: LIGHT.ON
+    E: lightOn
+    O: g.setIndiglo()
+
+TRANSITION:
+    S: LIGHT.ON
+    N: LIGHT.OFF
+    E: lightOff
+    O: g.unsetIndiglo()
 
 TRANSITION:
     S: NORMAL_STATE.RUNNING_TIME

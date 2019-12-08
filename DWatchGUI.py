@@ -4,17 +4,22 @@ import time
 import datetime
 import thread
 
+LIGHT_DURATION_MS = 2000
+
 class DWatchGUI:
 
   def __init__(self, parent, eventhandler):
     self.GUI = LowLevelGUI(parent, self)
 
     self.eventhandler = eventhandler
+    self.parent = parent
     self.start_holding_button = 0
     self.backgroundChronoMode = False
     self.display_time_mode = True
 
     self.handleEventOn()
+
+    self.lightOffTimer = None
   
   def handleEventOn(self):
     self.eventhandler.event("on")
@@ -29,12 +34,18 @@ class DWatchGUI:
 
   def topRightPressed(self):
     self.eventhandler.event("lightOn")
+    if self.lightOffTimer is not None:
+      self.parent.after_cancel(self.lightOffTimer)
     print "topRightPressed"
 
   def topRightReleased(self):
-    self.eventhandler.event("lightOff")
+    self.lightOffTimer = self.parent.after(LIGHT_DURATION_MS, self.lightOff)
     print "topRightReleased"
-  
+
+  def lightOff(self):
+    self.eventhandler.event("lightOff")
+
+
   def topLeftPressed(self):
     print "topLeftPressed"
     self.backgroundChronoModeOff()
