@@ -25,6 +25,11 @@ STATECHART:
     LIGHT[CS][DS]
         OFF[CS][DS]
         ON[CS]
+
+    ALARM [CS][DS]
+        DISPLAY [DS]
+        EDIT
+
 # LIGHT
 TRANSITION:
     S: LIGHT.OFF
@@ -37,6 +42,22 @@ TRANSITION:
     N: LIGHT.OFF
     E: lightOff
     O: g.unsetIndiglo()
+
+# ALARM
+TRANSITION:
+    S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
+    N: ALARM
+    E: setAlarm
+    C: g.getAlarmMode() is False
+    O: g.setAlarmMode(True)
+       g.refreshAlarmDisplay()
+
+TRANSITION:
+    S: ALARM
+    N: ALARM
+    E: setAlarm
+    C: g.getAlarmMode() is True
+    O: g.setAlarmMode(False)
 
 
 TRANSITION:

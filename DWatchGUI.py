@@ -22,6 +22,7 @@ class DWatchGUI:
     self.handleEventOn()
 
     self.lightOffTimer = None
+    self.alarm_mode = False
   
   def handleEventOn(self):
     self.eventhandler.event("on")
@@ -110,6 +111,12 @@ class DWatchGUI:
   def alarmStart(self):
     self.eventhandler.event("alarming")
     print "alarmStart"
+
+  def getAlarmMode(self):
+    return self.alarm_mode
+
+  def setAlarmMode(self, mode):
+    self.alarm_mode = mode
 
   # -----------------------------------
   # Interaction with the GUI elements
