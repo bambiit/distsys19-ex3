@@ -12,9 +12,8 @@ INITIALIZER:
 
 STATECHART:
     DISPLAY[DS][CS]
-        TIME_DISPLAY [DS][CS]
+        TIME_DISPLAY [DS]
             RUNNING_TIME [DS]
-        BOTTOM_RIGHT_BUTTON_HOLDING
         EDIT_TIME
             EDIT_MODE [DS]
             INCREASING_TIME
@@ -40,47 +39,22 @@ TRANSITION:
     O: g.unsetIndiglo()
 
 
-
 TRANSITION:
     S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     N: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     T: 1
     O: g.updateRunningTime()
 
-TRANSITION: [-1]
-    S: DISPLAY.TIME_DISPLAY
-    N: DISPLAY.BOTTOM_RIGHT_BUTTON_HOLDING
-    E: bottomRightPressed
-
-TRANSITION: [0]
-    S: DISPLAY.EDIT_TIME.EDIT_MODE
-    N: DISPLAY.BOTTOM_RIGHT_BUTTON_HOLDING
-    E: bottomRightPressed
-    O: [DUMP("Press to stop editing")]
-
-TRANSITION: [0]
-    S: DISPLAY.BOTTOM_RIGHT_BUTTON_HOLDING
-    N: DISPLAY.EDIT_TIME
-    E: editTime
-    O: [DUMP("Enter edit time mode")]
-
-TRANSITION: [-1]
+TRANSITION:
     S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     N: DISPLAY.EDIT_TIME
     E: editTime
-    O: [DUMP("Stop running time to edit")]
+    O: g.turnOffTimeDisplayMode()
+       g.turnOnEditMode()
+       [DUMP("Stop running time to edit")]
 
-TRANSITION: [0]
-    S: DISPLAY.BOTTOM_RIGHT_BUTTON_HOLDING
-    N: DISPLAY.TIME_DISPLAY
-    E: finishEdit
-    O: [DUMP("Stop editing time")]
 
-TRANSITION: [-1]
-    S: DISPLAY.EDIT_TIME.EDIT_MODE
-    N: DISPLAY.TIME_DISPLAY
-    E: finishEdit
-    O: [DUMP("Stop editing time")]
+
 
 TRANSITION:
     S: DISPLAY.EDIT_TIME.EDIT_MODE
@@ -104,10 +78,21 @@ TRANSITION:
 
 TRANSITION:
     S: DISPLAY.EDIT_TIME.EDIT_MODE
-    N: DISPLAY.EDIT_TIME.EDIT_MODE
+    N: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     T: 5
-    O: [DUMP("Stop waiting for editing action")]
-       g.waitingEditExpired()
+    O: [DUMP("Stop waiting for editing action1")]
+       g.turnOnTimeDisplayMode()
+       g.turnOffEditMode()
+
+
+TRANSITION:
+    S: DISPLAY.EDIT_TIME.EDIT_MODE
+    N: DISPLAY.TIME_DISPLAY.RUNNING_TIME
+    E: finishEdit
+    O: [DUMP("Stop waiting for editing action2")]
+       g.turnOnTimeDisplayMode()
+       g.turnOffEditMode()
+
 
 
 

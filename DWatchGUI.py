@@ -16,6 +16,8 @@ class DWatchGUI:
     self.start_holding_button = 0
     self.chrono_mode = False
     self.display_time_mode = True
+    self.edit_mode = False
+    self.is_edit_mode_while_pressing_a_button = False
 
     self.handleEventOn()
 
@@ -56,7 +58,7 @@ class DWatchGUI:
       self.turnOffTimeDisplayMode()
       self.refreshChronoDisplay()
 
-    else:
+    elif self.chrono_mode:
       self.eventhandler.event("display_time_mode")
       self.turnOffChronoMode()
       self.turnOnTimeDisplayMode()
@@ -66,8 +68,13 @@ class DWatchGUI:
   def bottomRightPressed(self):
     self.start_holding_button = datetime.datetime.now()
     self.eventhandler.event("bottomRightPressed")
-    if self.chrono_mode:
+    if self.display_time_mode:
+      self.current_mode_while_pressing_a_button = False
+    elif self.edit_mode:
+      self.is_edit_mode_while_pressing_a_button = True
+    elif self.chrono_mode:
       self.eventhandler.event("initChrono")
+
 
   def chronoRunning(self):
       for i in range(25):
@@ -77,15 +84,20 @@ class DWatchGUI:
 
   def bottomRightReleased(self):
     self.eventhandler.event("released")
-    if self.display_time_mode:
-      diff = datetime.datetime.now() - self.start_holding_button
-      holding_duration = round(float(diff.total_seconds()), 1)
+    diff = datetime.datetime.now() - self.start_holding_button
+    holding_duration = round(float(diff.total_seconds()), 1)
 
+    if self.display_time_mode and not self.is_edit_mode_while_pressing_a_button:
+      if holding_duration >= 1.5:
+        self.eventhandler.event("editTime")
+
+    elif self.edit_mode or self.is_edit_mode_while_pressing_a_button:
       if holding_duration >= 2:
         self.eventhandler.event("finishEdit")
-      elif holding_duration >= 1.5:
-        self.eventhandler.event("editTime")
-      self.start_holding_button = 0
+        self.is_edit_mode_while_pressing_a_button = False
+        print"PLEASE"
+
+
 
   def bottomLeftPressed(self):
     if self.chrono_mode:
@@ -173,16 +185,16 @@ class DWatchGUI:
   # Update running time for every second
   def updateRunningTime(self):
     self.increaseTimeByOne()
-    if self.display_time_mode:
+    if self.display_time_mode or self.edit_mode:
       self.refreshTimeDisplay()
 
-
-  # Stop waiting for edit, expired for 5 seconds
-  def waitingEditExpired(self):
-    self.eventhandler.event("finishEdit")
-
-
   # Turn on/off Time Display Mode
+
+  def turnOnEditMode(self):
+    self.edit_mode = True
+
+  def turnOffEditMode(self):
+    self.edit_mode = False
 
   def turnOnTimeDisplayMode(self):
     self.display_time_mode = True
