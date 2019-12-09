@@ -12,19 +12,20 @@ INITIALIZER:
 
 STATECHART:
     DISPLAY[DS][CS]
-        NORMAL_STATE [DS]
+        TIME_DISPLAY [DS][CS]
             RUNNING_TIME [DS]
-        BOTTOM_RIGHT_BUTTON_HOLDING [CS]
+        BOTTOM_RIGHT_BUTTON_HOLDING
         EDIT_TIME
             EDIT_MODE [DS]
             INCREASING_TIME
-        CHRONO [HS]
-            STOP [DS]
-            RUNNING
+
+    CHRONO [DS][CS]
+        STOP [DS]
+        RUNNING
+
     LIGHT[CS][DS]
         OFF[CS][DS]
         ON[CS]
-
 # LIGHT
 TRANSITION:
     S: LIGHT.OFF
@@ -38,14 +39,16 @@ TRANSITION:
     E: lightOff
     O: g.unsetIndiglo()
 
+
+
 TRANSITION:
-    S: DISPLAY.NORMAL_STATE.RUNNING_TIME
-    N: DISPLAY.NORMAL_STATE.RUNNING_TIME
+    S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
+    N: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     T: 1
     O: g.updateRunningTime()
 
 TRANSITION: [-1]
-    S: DISPLAY.NORMAL_STATE
+    S: DISPLAY.TIME_DISPLAY
     N: DISPLAY.BOTTOM_RIGHT_BUTTON_HOLDING
     E: bottomRightPressed
 
@@ -62,20 +65,20 @@ TRANSITION: [0]
     O: [DUMP("Enter edit time mode")]
 
 TRANSITION: [-1]
-    S: DISPLAY.NORMAL_STATE.RUNNING_TIME
+    S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     N: DISPLAY.EDIT_TIME
     E: editTime
     O: [DUMP("Stop running time to edit")]
 
 TRANSITION: [0]
     S: DISPLAY.BOTTOM_RIGHT_BUTTON_HOLDING
-    N: DISPLAY.NORMAL_STATE
+    N: DISPLAY.TIME_DISPLAY
     E: finishEdit
     O: [DUMP("Stop editing time")]
 
 TRANSITION: [-1]
     S: DISPLAY.EDIT_TIME.EDIT_MODE
-    N: DISPLAY.NORMAL_STATE
+    N: DISPLAY.TIME_DISPLAY
     E: finishEdit
     O: [DUMP("Stop editing time")]
 
@@ -106,60 +109,33 @@ TRANSITION:
     O: [DUMP("Stop waiting for editing action")]
        g.waitingEditExpired()
 
-TRANSITION: [HS]
-    S: DISPLAY.NORMAL_STATE
-    N: DISPLAY.CHRONO
-    E: changeMode
-    O: print "DISPLAY -> CHRONO"
-       g.turnOffTimeDisplayMode()
-       g.refreshChronoDisplay()
-       g.backgroundChronoModeOff()
+
 
 TRANSITION:
-    S: DISPLAY.CHRONO.STOP
-    N: DISPLAY.NORMAL_STATE
-    E: changeMode
-    O: print "CHRONO -> DISPLAY"
-       g.turnOnTimeDisplayMode()
-       g.refreshTimeDisplay()
-
-TRANSITION:
-    S: DISPLAY.CHRONO.RUNNING
-    N: DISPLAY.NORMAL_STATE
-    E: changeMode
-    O: print "CHRONO -> DISPLAY, CHRONO BACKGROUND"
-       g.turnOnTimeDisplayMode()
-       g.refreshTimeDisplay()
-       g.backgroundChronoModeOn()
-       g.startThreadBackgroundChrono()
-
-TRANSITION:
-    S: DISPLAY.CHRONO.STOP
-    N: DISPLAY.CHRONO.RUNNING
+    S: CHRONO.STOP
+    N: CHRONO.RUNNING
     E: initChrono
     O: print "CHRONO STARTED"
 
 TRANSITION:
-    S: DISPLAY.CHRONO.RUNNING
-    N: DISPLAY.CHRONO.RUNNING
+    S: CHRONO.RUNNING
+    N: CHRONO.RUNNING
     T: 0.25
     O: g.chronoRunning()
-       g.refreshChronoDisplay()
 
 TRANSITION:
-    S: DISPLAY.CHRONO.RUNNING
-    N: DISPLAY.CHRONO.STOP
+    S: CHRONO.RUNNING
+    N: CHRONO.STOP
     E: initChrono
-    O: print "CHRONO STOPPED"
+    O: print "CHRONO STOPED"
+
 
 TRANSITION:
-    S: DISPLAY.CHRONO.STOP
-    N: DISPLAY.CHRONO.STOP
+    S: CHRONO.STOP
+    N: CHRONO.STOP
     E: resetChrono
     O: g.resetChrono()
        print "CHRONO RESET"
        g.refreshChronoDisplay()
-
-
 
 
