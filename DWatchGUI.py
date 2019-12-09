@@ -13,7 +13,7 @@ class DWatchGUI:
 
     self.eventhandler = eventhandler
     self.parent = parent
-    self.start_holding_button = 0
+    self.start_holding_button = datetime.datetime.now()
     self.chrono_mode = False
     self.display_time_mode = True
     self.edit_mode = False
@@ -22,7 +22,8 @@ class DWatchGUI:
     self.handleEventOn()
 
     self.lightOffTimer = None
-    self.alarm_mode = False
+    self.alarm_mode = "off"
+    self.is_edit_alarm = False
   
   def handleEventOn(self):
     self.eventhandler.event("on")
@@ -95,17 +96,47 @@ class DWatchGUI:
         self.eventhandler.event("finishEdit")
         self.is_edit_mode_while_pressing_a_button = False
 
-
-
   def bottomLeftPressed(self):
     if self.chrono_mode:
       self.eventhandler.event("resetChrono")
     self.eventhandler.event("increase")
     self.eventhandler.event("setAlarm")
 
+    self.start_holding_button = datetime.datetime.now()
+
+    if self.alarm_mode == "edit":
+      print "Alarm editing"
+      self.eventhandler.event("editAlarm")
+
+
   def bottomLeftReleased(self):
     self.eventhandler.event("stopInc")
     self.eventhandler.event("onoff")
+
+    diff = datetime.datetime.now() - self.start_holding_button
+    holding_duration = round(float(diff.total_seconds()), 1)
+    if self.alarm_mode == "edit":
+      print "Stop alarm editing"
+      self.setAlarmMode("on")
+      self.eventhandler.event("stopEditAlarm")
+    elif self.alarm_mode == "on":
+      if holding_duration >= 1.5:
+        print "Alarm edit mode activated"
+        self.setAlarmMode("edit")
+      else:
+        print "Stop alarm mode"
+        self.setAlarmMode("off")
+        self.eventhandler.event("initAlarm")
+        self.GUI.curTime = list(time.localtime()[3:6])
+    elif self.display_time_mode:
+      self.setAlarmMode("on")
+      self.turnOffTimeDisplayMode()
+      self.refreshAlarmDisplay()
+    elif self.alarm_mode == "on":
+      self.eventhandler.event("display_time_mode")
+      self.setAlarmMode("off")
+      self.turnOnTimeDisplayMode()
+      self.refreshTimeDisplay()
     print "bottomLeftReleased"
 
   def alarmStart(self):
@@ -189,7 +220,7 @@ class DWatchGUI:
   # Update running time for every second
   def updateRunningTime(self):
     self.increaseTimeByOne()
-    if self.display_time_mode or self.edit_mode:
+    if self.display_time_mode or self.edit_mode or self.alarm_mode == "edit":
       self.refreshTimeDisplay()
 
   # Turn on/off Time Display Mode

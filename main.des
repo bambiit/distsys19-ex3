@@ -29,6 +29,8 @@ STATECHART:
     ALARM [CS][DS]
         DISPLAY [DS]
         EDIT
+            EDIT_MODE [DS]
+            INCREASING_TIME
 
 # LIGHT
 TRANSITION:
@@ -45,24 +47,43 @@ TRANSITION:
 
 # ALARM
 TRANSITION:
-    S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
-    N: ALARM
+    S: ALARM.DISPLAY
+    N: ALARM.EDIT
     E: setAlarm
-    C: g.getAlarmMode() is False
-    O: g.setAlarmMode(True)
-       g.refreshAlarmDisplay()
+    O: print "Alarm STARTED"
 
 TRANSITION:
-    S: ALARM
-    N: ALARM
-    E: setAlarm
-    C: g.getAlarmMode() is True
-    O: g.setAlarmMode(False)
+    S: ALARM.EDIT
+    N: DISPLAY.TIME_DISPLAY.RUNNING_TIME
+    E: initAlarm
+    O: print "ALARM STOPPED"
+       g.turnOnTimeDisplayMode()
+
+TRANSITION:
+    S: ALARM.EDIT.EDIT_MODE
+    N: ALARM.EDIT.INCREASING_TIME
+    E: editAlarm
+    O: [DUMP("Edit alarm => increase time")]
+
+TRANSITION:
+    S: ALARM.EDIT.INCREASING_TIME
+    N: ALARM.EDIT.INCREASING_TIME
+    T: 0.3
+    C: g.alarm_mode == "edit"
+    O: [DUMP("Adjusting Alarm Time")]
+       g.updateRunningTime()
+
+TRANSITION:
+    S: ALARM.EDIT.INCREASING_TIME
+    N: ALARM.EDIT.EDIT_MODE
+    E: stopEditAlarm
+    O: [DUMP("Increase time alarm => Edit mode")]
 
 
 TRANSITION:
     S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     N: DISPLAY.TIME_DISPLAY.RUNNING_TIME
+    C: g.alarm_mode == "off"
     T: 1
     O: g.updateRunningTime()
 
@@ -70,6 +91,7 @@ TRANSITION:
     S: DISPLAY.TIME_DISPLAY.RUNNING_TIME
     N: DISPLAY.EDIT_TIME
     E: editTime
+    C: g.alarm_mode == "off"
     O: g.turnOffTimeDisplayMode()
        g.turnOnEditMode()
        [DUMP("Stop running time to edit")]

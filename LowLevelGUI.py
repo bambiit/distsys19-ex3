@@ -444,6 +444,8 @@ class LowLevelGUI:
       alarmToDraw=alarmToDraw[0:3]+"  "+alarmToDraw[5:]
     if "seconds" not in toDraw:
       alarmToDraw=alarmToDraw[0:6]+"  "
+
+    self.curTime = [12, 0, 0]
       
     self.clearDisplay()
     
