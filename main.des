@@ -112,7 +112,7 @@ TRANSITION:
     S: CHRONO.RUNNING
     N: CHRONO.STOP
     E: initChrono
-    O: print "CHRONO STOPED"
+    O: print "CHRONO STOPPED"
 
 
 TRANSITION:

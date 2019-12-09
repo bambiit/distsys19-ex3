@@ -95,7 +95,6 @@ class DWatchGUI:
       if holding_duration >= 2:
         self.eventhandler.event("finishEdit")
         self.is_edit_mode_while_pressing_a_button = False
-        print"PLEASE"
 
 
 
