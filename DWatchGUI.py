@@ -24,6 +24,7 @@ class DWatchGUI:
     self.lightOffTimer = None
     self.alarm_mode = "off"
     self.is_edit_alarm = False
+    self.alarm_time = None
   
   def handleEventOn(self):
     self.eventhandler.event("on")
@@ -127,6 +128,9 @@ class DWatchGUI:
         print "Stop alarm mode"
         self.setAlarmMode("off")
         self.eventhandler.event("initAlarm")
+        self.alarm_time = self.GUI.curTime
+        if self.alarm_time:
+          self.setAlarm()
         self.GUI.curTime = list(time.localtime()[3:6])
     elif self.display_time_mode:
       self.setAlarmMode("on")
@@ -220,6 +224,10 @@ class DWatchGUI:
   # Update running time for every second
   def updateRunningTime(self):
     self.increaseTimeByOne()
+    if self.GUI.curTime == self.alarm_time:
+      self.alarm_time = None
+      self.GUI.hideAlarm()
+      self.blinkingAlarm()
     if self.display_time_mode or self.edit_mode or self.alarm_mode == "edit":
       self.refreshTimeDisplay()
 
@@ -242,3 +250,9 @@ class DWatchGUI:
 
   def turnOffChronoMode(self):
     self.chrono_mode = False
+
+  def blinkingAlarm(self):
+    self.setIndiglo()
+    self.unsetIndiglo()
+    self.setIndiglo()
+    self.unsetIndiglo()
