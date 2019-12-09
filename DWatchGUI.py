@@ -68,9 +68,7 @@ class DWatchGUI:
   def bottomRightPressed(self):
     self.start_holding_button = datetime.datetime.now()
     self.eventhandler.event("bottomRightPressed")
-    if self.display_time_mode:
-      self.current_mode_while_pressing_a_button = False
-    elif self.edit_mode:
+    if self.edit_mode:
       self.is_edit_mode_while_pressing_a_button = True
     elif self.chrono_mode:
       self.eventhandler.event("initChrono")
