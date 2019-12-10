@@ -251,4 +251,5 @@ class DWatchGUI:
   def stopAlarming(self):
     self.GUI.setAlarm()
     self.alarming_start_mode = False
+    self.unsetIndiglo()
 
