@@ -15,8 +15,9 @@ class DWatchGUI:
     self.chrono_mode = False
     self.display_time_mode = True
     self.edit_mode = False
-    self.is_edit_mode_while_pressing_a_button = False
-    self.alarm_mode = False
+    self.is_edit_mode_while_holding_a_button = False
+    self.alarm_display_mode = False
+    self.alarm_edit_mode = False
     self.alarming_start_mode = False
 
     self.handleEventOn()
@@ -76,8 +77,8 @@ class DWatchGUI:
 
     self.start_holding_button = datetime.datetime.now()
     self.eventhandler.event("bottomRightPressed")
-    if self.edit_mode:
-      self.is_edit_mode_while_pressing_a_button = True
+    if self.edit_mode or self.alarm_edit_mode:
+      self.is_edit_mode_while_holding_a_button = True
     elif self.chrono_mode:
       self.eventhandler.event("initChrono")
 
@@ -96,14 +97,14 @@ class DWatchGUI:
       diff = datetime.datetime.now() - self.start_holding_button
       holding_duration = round(float(diff.total_seconds()), 1)
 
-      if self.display_time_mode and not self.is_edit_mode_while_pressing_a_button:
+      if self.display_time_mode and not self.is_edit_mode_while_holding_a_button:
         if holding_duration >= 1.5:
           self.eventhandler.event("editTime")
 
-      elif self.edit_mode or self.is_edit_mode_while_pressing_a_button:
+      elif self.edit_mode or self.is_edit_mode_while_holding_a_button:
         if holding_duration >= 2:
           self.eventhandler.event("finishEdit")
-          self.is_edit_mode_while_pressing_a_button = False
+          self.is_edit_mode_while_holding_a_button = False
 
   def bottomLeftPressed(self):
     self.start_holding_button = datetime.datetime.now()
@@ -111,7 +112,7 @@ class DWatchGUI:
     if self.chrono_mode:
       self.eventhandler.event("resetChrono")
 
-    if self.is_edit_mode_while_pressing_a_button or self.edit_mode:
+    if self.alarm_edit_mode or self.edit_mode:
       self.eventhandler.event("increase")
 
   def bottomLeftReleased(self):
@@ -119,13 +120,11 @@ class DWatchGUI:
 
     if self.alarming_start_mode:
       self.eventhandler.event("alarmOff")
-    elif not self.chrono_mode:
-      if not self.is_edit_mode_while_pressing_a_button and not self.edit_mode:
+    elif self.display_time_mode or self.alarm_display_mode:
         diff = datetime.datetime.now() - self.start_holding_button
         holding_duration = round(float(diff.total_seconds()), 1)
         if holding_duration >= 1.5:
           self.eventhandler.event("setAlarm")
-          self.is_edit_mode_while_pressing_a_button = True
         else:
           self.eventhandler.event("onoff")
 
@@ -210,14 +209,14 @@ class DWatchGUI:
   def updateRunningTime(self):
     self.increaseTimeByOne()
 
-    if self.checkTime() and not self.alarming_start_mode and not self.is_edit_mode_while_pressing_a_button:
+    if self.checkTime() and not self.alarming_start_mode and not self.alarm_edit_mode:
       self.alarmStart()
       self.setAlarm()
 
     if self.display_time_mode or self.edit_mode:
       self.refreshTimeDisplay()
 
-  # Turn on/off Time Display Mode
+  # Turn on/off Modes
 
   def turnOnEditMode(self):
     self.edit_mode = True
@@ -225,9 +224,14 @@ class DWatchGUI:
   def turnOffEditMode(self):
     self.edit_mode = False
 
+  def turnOnAlarmEditMode(self):
+    self.alarm_edit_mode = True
+
+  def turnOffAlarmEditMode(self):
+    self.alarm_edit_mode = False
+
   def turnOnTimeDisplayMode(self):
     self.display_time_mode = True
-    self.is_edit_mode_while_pressing_a_button = False
 
   def turnOffTimeDisplayMode(self):
     self.display_time_mode = False
@@ -238,11 +242,11 @@ class DWatchGUI:
   def turnOffChronoMode(self):
     self.chrono_mode = False
 
-  def turnOnAlarmMode(self):
-    self.alarm_mode = True
+  def turnOnAlarmDisplayMode(self):
+    self.alarm_display_mode = True
 
-  def turnOffAlarmMode(self):
-    self.alarm_mode = False
+  def turnOffAlarmDisplayMode(self):
+    self.alarm_display_mode = False
 
   def stopAlarming(self):
     self.GUI.setAlarm()

@@ -88,6 +88,7 @@ TRANSITION:
     T: 5
     O: [DUMP("Stop waiting for editing action1")]
        g.turnOnTimeDisplayMode()
+       g.refreshTimeDisplay()
        g.turnOffEditMode()
 
 
@@ -97,6 +98,7 @@ TRANSITION:
     E: finishEdit
     O: [DUMP("Stop waiting for editing action2")]
        g.turnOnTimeDisplayMode()
+       g.refreshTimeDisplay()
        g.turnOffEditMode()
 
 TRANSITION:
@@ -132,15 +134,15 @@ TRANSITION:
     E: onoff
     O: g.refreshAlarmDisplay()
        g.turnOffTimeDisplayMode()
-       g.turnOnAlarmMode()
+       g.turnOnAlarmDisplayMode()
 
 TRANSITION:
     S: ALARM.ALARM_DISPLAY_ON
     N: ALARM.ALARM_DISPLAY_OFF
     E: onoff
-    O: g.refreshTimeDisplay()
-       g.turnOnTimeDisplayMode()
-       g.turnOffAlarmMode()
+    O: g.turnOnTimeDisplayMode()
+       g.refreshTimeDisplay()
+       g.turnOffAlarmDisplayMode()
 
 TRANSITION:
     S: ALARM.ALARM_DISPLAY_ON
@@ -149,7 +151,7 @@ TRANSITION:
     O: [DUMP("Enter edit alarm mode")]
        g.refreshAlarmDisplay()
        g.turnOffTimeDisplayMode()
-       g.turnOnAlarmMode()
+       g.turnOnAlarmEditMode()
 
 TRANSITION:
     S: ALARM.ALARM_DISPLAY_OFF
@@ -158,13 +160,16 @@ TRANSITION:
     O: [DUMP("Enter edit alarm mode")]
        g.refreshAlarmDisplay()
        g.turnOffTimeDisplayMode()
-       g.turnOnAlarmMode()
+       g.turnOnAlarmEditMode()
+
 
 TRANSITION:
     S: ALARM.EDIT_ALARM
     N: ALARM.INCREASING_TIME
     E: increase
-    O: [DUMP("Start increasing alarm time")]
+    O: g.increaseAlarmByOne()
+       g.refreshAlarmDisplay()
+       [DUMP("Start increasing alarm time")]
 
 TRANSITION:
     S: ALARM.INCREASING_TIME
@@ -182,19 +187,20 @@ TRANSITION:
 
 TRANSITION:
     S: ALARM.EDIT_ALARM
-    N: ALARM.ALARM_DISPLAY_OFF
+    N: ALARM.ALARM_DISPLAY_ON
     T: 5
     O: [DUMP("Stop waiting for editing alarm")]
-       g.turnOnTimeDisplayMode()
-       g.turnOffAlarmMode()
+       g.turnOffAlarmEditMode()
+       g.turnOnAlarmDisplayMode()
 
 TRANSITION:
     S: ALARM.EDIT_ALARM
-    N: ALARM.ALARM_DISPLAY_OFF
+    N: ALARM.ALARM_DISPLAY_ON
     E: finishEdit
     O: [DUMP("Stop editing alarm")]
-       g.turnOnTimeDisplayMode()
-       g.turnOffAlarmMode()
+       g.turnOffAlarmEditMode()
+       g.turnOnAlarmDisplayMode()
+
 
 TRANSITION:
     S: ALARM.ALARM_DISPLAY_OFF
