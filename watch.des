@@ -176,6 +176,7 @@ TRANSITION:
     S: ALARM.INCREASING_TIME
     N: ALARM.INCREASING_TIME
     T: 0.3
+    C: not g.checkTime()
     O: g.increaseAlarmByOne()
        g.refreshAlarmDisplay()
        [DUMP("Adjusting alarm time")]
