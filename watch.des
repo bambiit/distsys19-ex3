@@ -31,8 +31,9 @@ STATECHART:
         ALARM_DISPLAY_ON
         EDIT_ALARM
         INCREASING_TIME
-        ALARMING
-            BLINKING [DS][CS]
+        ALARMING [CS]
+            LIGHT_ON [DS]
+            LIGHT_OFF
 
 
 # LIGHT
@@ -207,14 +208,21 @@ TRANSITION:
     N: ALARM.ALARMING
     E: alarming
     O: [DUMP("Alarming")]
-       g.alarmBlinking()
 
 TRANSITION:
-    S: ALARM.ALARMING.BLINKING
-    N: ALARM.ALARMING.BLINKING
-    T: 1
+    S: ALARM.ALARMING.LIGHT_ON
+    N: ALARM.ALARMING.LIGHT_OFF
+    T: 0.5
     O: [DUMP("Blinking")]
-       g.alarmBlinking()
+       g.unsetIndiglo()
+
+
+TRANSITION:
+    S: ALARM.ALARMING.LIGHT_OFF
+    N: ALARM.ALARMING.LIGHT_ON
+    T: 0.5
+    O: [DUMP("Blinking")]
+       g.setIndiglo()
 
 TRANSITION:
     S: ALARM.ALARMING

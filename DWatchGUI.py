@@ -252,11 +252,3 @@ class DWatchGUI:
     self.GUI.setAlarm()
     self.alarming_start_mode = False
 
-  def alarmBlinking(self):
-    self.GUI.setIndiglo()
-    time.sleep(0.3)
-    self.GUI.unsetIndiglo()
-    time.sleep(0.3)
-    self.GUI.setIndiglo()
-    time.sleep(0.3)
-    self.GUI.unsetIndiglo()
