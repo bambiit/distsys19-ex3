@@ -317,7 +317,14 @@ class LowLevelGUI:
                              creationEvent,
                              animationEvent]    
     
-    
+  def increaseAlarmByOne(self):
+    self.curAlarm[2] = self.curAlarm[2] + 1
+    self.curAlarm[1] = (self.curAlarm[1] + self.curAlarm[2] / 60)
+    self.curAlarm[0] = (self.curAlarm[0] + self.curAlarm[1] / 60)
+
+    self.curAlarm[2] = self.curAlarm[2] % 60
+    self.curAlarm[1] = self.curAlarm[1] % 60
+    self.curAlarm[0] = self.curAlarm[0] % 24
         
   def increaseTimeByOne(self):
     self.curTime[2]=self.curTime[2]+1
@@ -444,8 +451,6 @@ class LowLevelGUI:
       alarmToDraw=alarmToDraw[0:3]+"  "+alarmToDraw[5:]
     if "seconds" not in toDraw:
       alarmToDraw=alarmToDraw[0:6]+"  "
-
-    self.curTime = [12, 0, 0]
       
     self.clearDisplay()
     
